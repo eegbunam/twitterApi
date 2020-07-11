@@ -10,6 +10,7 @@ import UIKit
 
 class TweetsViewController: UIViewController {
     
+
     
     @IBOutlet weak var tableview: UITableView!
     var ListDictionary : [[String:Any]] = [[:]]
@@ -19,10 +20,16 @@ class TweetsViewController: UIViewController {
         super.viewDidLoad()
         tableview.delegate = self
         tableview.dataSource = self
-        loadTweets()
         myrefreshcontroller.addTarget(self, action: #selector(loadTweets), for: .valueChanged)
         tableview.refreshControl = myrefreshcontroller
+        tableview.rowHeight = UITableView.automaticDimension
+        tableview.estimatedRowHeight = 150
         
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(true)
+        loadTweets()
     }
     
     
@@ -61,6 +68,8 @@ class TweetsViewController: UIViewController {
     }
     
     
+ 
+    
     @IBAction func logout(_ sender: Any) {
         TwitterAPICaller.client?.deauthorize()
         UserDefaults.standard.set(false, forKey: "login")
@@ -90,6 +99,10 @@ extension TweetsViewController : UITableViewDelegate , UITableViewDataSource {
                 cell.profileImage.image = UIImage(data: data ?? Data())
                 
             }
+            cell.setFavorite(isFavorite: tweet["favorited"] as? Bool ?? false)
+            
+            cell.tweetId = tweet["id"] as? Int ?? -1
+            cell.setRetweet(tweet["retweeted"] as? Bool ?? false)
             
             
            
